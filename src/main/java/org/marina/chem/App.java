@@ -36,7 +36,6 @@ public class App extends Application {
         Scene myScene = new Scene(rootNode,600, 500);
         myStage.setScene(myScene);
 
-
         Label count = new Label("Count: ");
         count.setLayoutX(420);
         count.setLayoutY(30);
@@ -51,6 +50,7 @@ public class App extends Application {
         myBox.addBalls(Integer.valueOf(counter.getText()));
 
         // рисуем текущее положение частиц
+
         drawBalls(myBox, gc);
         gc.setFill(Color.BLACK);
         gc.strokeLine(0,maxY,maxX,maxY);
@@ -65,6 +65,7 @@ public class App extends Application {
                 updateImage(myBox,gc);
             }
         });
+
 
         Button btnNew = new Button("New  ");
         btnNew.setLayoutX(550);
@@ -82,6 +83,7 @@ public class App extends Application {
         btnShow.setLayoutX(550);
         btnShow.setLayoutY(80);
 
+
         Timeline timeline = new Timeline(new KeyFrame(
                 Duration.millis(250),
                 ae1 -> updateImage(myBox,gc)));
@@ -93,9 +95,11 @@ public class App extends Application {
             }
         });
 
+
         Button btnStop = new Button("Stop  ");
         btnStop.setLayoutX(550);
         btnStop.setLayoutY(110);
+
 
         btnStop.setOnAction(new EventHandler<ActionEvent > () {
             public void handle (ActionEvent ae) {
@@ -103,7 +107,9 @@ public class App extends Application {
             }
         });
 
+
         rootNode.getChildren().addAll(myCanvas, btnMove, btnShow, btnStop, count, counter, btnNew);
+
         myStage.show();
     }
 
@@ -121,9 +127,11 @@ public class App extends Application {
         for (int i = 0; i < b.size(); i++) {
             gc.setFill(b.get(i).color);
             gc.fillOval(b.get(i).getX()-b.get(i).getRadius(), b.get(i).getY()-b.get(i).getRadius(), 2*b.get(i).getRadius(),2*b.get(i).getRadius());
+
             gc.setFill(Color.BLACK);
             gc.fillText(b.get(i).getName(), b.get(i).getX(),b.get(i).getY());
         }
     }
 
 }
+
