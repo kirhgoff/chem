@@ -1,96 +1,129 @@
 package org.marina.chem;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.*;
 import javafx.event.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
+import javafx.scene.paint.Color;
 import javafx.stage.*;
-import javafx.scene.layout.*;
-import javafx.geometry.*;
-import javafx.scene.image.*;
-import java.util.*;
-import java.math.*;
-
-
-
 import java.util.ArrayList;
+import javafx.scene.canvas.*;
+import javafx.util.Duration;
+
 
 public class App extends Application {
+
+    Double maxX, maxY;
+    GraphicsContext gc;
+
     public static void main(String[] args) {
         launch(args);
     }
 
     public void start(Stage myStage) {
-        myStage.setTitle("Equation");
-        FlowPane rootNode = new FlowPane();
-        rootNode.setAlignment(Pos.TOP_LEFT);
-        Scene myScene = new Scene(rootNode,600,250);
+
+        myStage.setTitle("Brownian");
+        Group rootNode = new Group();
+
+        Box myBox = new Box(400.0,450.0);
+        maxX = myBox.getWidth();
+        maxY = myBox.getHeight();
+
+        Canvas myCanvas = new Canvas(maxX, maxY);
+        gc = myCanvas.getGraphicsContext2D();
+        Scene myScene = new Scene(rootNode,600, 500);
         myStage.setScene(myScene);
 
-        final Label a = new Label("Param a: ");
-        final Label b = new Label("Param b: ");
-        final Label c = new Label("Param c: ");
 
-        final TextField field_a = new TextField("1.0");
-        final TextField field_b = new TextField("1.0");
-        final TextField field_c = new TextField("0.0");
+        Label count = new Label("Count: ");
+        count.setLayoutX(420);
+        count.setLayoutY(30);
 
-        final Label d = new Label("");
-        final Label e = new Label("");
+        TextField counter = new TextField("10");
+        counter.setLayoutX(460);
+        counter.setLayoutY(25);
+        counter.setMinWidth(40);
+        counter.setMaxWidth(40);
 
-        final RadioButton rbLinear = new RadioButton("Linear");
-        final RadioButton rbQuadratic = new RadioButton("Quadratic");
-        final ToggleGroup tg = new ToggleGroup();
-        rbLinear.setToggleGroup(tg);
-        rbQuadratic.setToggleGroup(tg);
+        // укладываем частицы в коробку
+        myBox.addBalls(Integer.valueOf(counter.getText()));
 
-        rbLinear.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent ae) {
-                c.setVisible(false);
-                field_c.setVisible(false);
+        // рисуем текущее положение частиц
+        drawBalls(myBox, gc);
+        gc.setFill(Color.BLACK);
+        gc.strokeLine(0,maxY,maxX,maxY);
+        gc.strokeLine(maxX,0,maxX,maxY);
+
+        Button btnMove = new Button("Move");
+        btnMove.setLayoutX(550);
+        btnMove.setLayoutY(50);
+
+        btnMove.setOnAction(new EventHandler<ActionEvent > () {
+            public void handle (ActionEvent ae) {
+                updateImage(myBox,gc);
             }
         });
 
-        rbQuadratic.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent ae) {
-                c.setVisible(true);
-                field_c.setVisible(true);
+        Button btnNew = new Button("New  ");
+        btnNew.setLayoutX(550);
+        btnNew.setLayoutY(20);
+
+        btnNew.setOnAction(new EventHandler<ActionEvent > () {
+            public void handle (ActionEvent ae) {
+                myBox.removeBalls();
+                myBox.addBalls(Integer.valueOf(counter.getText()));
+                updateImage(myBox, gc);
             }
         });
 
-        rbLinear.setSelected(true);
+        Button btnShow = new Button("Show ");
+        btnShow.setLayoutX(550);
+        btnShow.setLayoutY(80);
 
-        final Linear lEquation = new Linear(Double.valueOf(field_a.getText()),Double.valueOf(field_b.getText()));
-        final Quadratic qEquation = new Quadratic(Double.valueOf(field_a.getText()),Double.valueOf(field_b.getText()),Double.valueOf(field_c.getText()));
+        Timeline timeline = new Timeline(new KeyFrame(
+                Duration.millis(250),
+                ae1 -> updateImage(myBox,gc)));
 
-        Button btnSolve = new Button("Solve");
-        btnSolve.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent ae) {
-                if ((RadioButton)tg.getSelectedToggle() == rbLinear)  {
-                    lEquation.setParam(Double.valueOf(field_a.getText()),Double.valueOf(field_b.getText()));
-                    d.setText("Equation: " + lEquation.show());
-                    ArrayList<Double> sol = lEquation.solve();
-                    Double sol1 = sol.get(0);
-                    e.setText("  Solution: " + sol1);
-                }
-                else if ((RadioButton)tg.getSelectedToggle()== rbQuadratic) {
-                    qEquation.setParam(Double.valueOf(field_a.getText()),Double.valueOf(field_b.getText()),Double.valueOf(field_c.getText()));
-                    d.setText("Equation: " + qEquation.show());
-                    ArrayList<Double> sol2 = qEquation.solve();
-                    String es = "";
-                    if (sol2.size() == 0) es = "no solution"; else {
-                        for (int s = 0; s < sol2.size(); s++) {
-                            es = es + sol2.get(s) + "   ";
-                        }
-                    }
-                    e.setText("  Solution: " + es);
-                }
+        btnShow.setOnAction(new EventHandler<ActionEvent > () {
+            public void handle (ActionEvent ae) {
+                timeline.setCycleCount(Animation.INDEFINITE);
+                timeline.play();
             }
         });
 
+        Button btnStop = new Button("Stop  ");
+        btnStop.setLayoutX(550);
+        btnStop.setLayoutY(110);
 
+        btnStop.setOnAction(new EventHandler<ActionEvent > () {
+            public void handle (ActionEvent ae) {
+                timeline.stop();
+            }
+        });
 
-        rootNode.getChildren().addAll(a,field_a, b, field_b, c, field_c, btnSolve,rbLinear,rbQuadratic,d,e);
+        rootNode.getChildren().addAll(myCanvas, btnMove, btnShow, btnStop, count, counter, btnNew);
         myStage.show();
-
     }
+
+    public void updateImage(Box box, GraphicsContext gc) {
+        box.move();
+        gc.clearRect(0.0,0.0,maxX,maxY);
+        gc.strokeLine(0,maxY,maxX,maxY);
+        gc.strokeLine(maxX,0,maxX,maxY);
+        gc.strokeLine(0,0,0,maxY);
+        drawBalls(box, gc);
+    }
+
+    public void drawBalls(Box box, GraphicsContext gc) {
+        ArrayList<Ball> b = box.getBalls();
+        for (int i = 0; i < b.size(); i++) {
+            gc.setFill(b.get(i).color);
+            gc.fillOval(b.get(i).getX()-b.get(i).getRadius(), b.get(i).getY()-b.get(i).getRadius(), 2*b.get(i).getRadius(),2*b.get(i).getRadius());
+            gc.setFill(Color.BLACK);
+            gc.fillText(b.get(i).getName(), b.get(i).getX(),b.get(i).getY());
+        }
+    }
+
 }
