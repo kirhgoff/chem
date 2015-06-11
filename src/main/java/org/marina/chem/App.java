@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import javafx.scene.canvas.*;
 import javafx.util.Duration;
 
-
+//РџСЂРѕРІРµСЂСЏРµРј СЂСѓСЃСЃРєРёРµ РєРѕРјРјРµРЅС‚Р°СЂРёРё
 public class App extends Application {
 
     Double maxX, maxY;
@@ -37,10 +37,10 @@ public class App extends Application {
         Scene myScene = new Scene(rootNode,600, 500);
         myStage.setScene(myScene);
 
-        // укладываем частицы в коробку
+        // ГіГЄГ«Г Г¤Г»ГўГ ГҐГ¬ Г·Г Г±ГІГЁГ¶Г» Гў ГЄГ®Г°Г®ГЎГЄГі
         myBox.addBalls(15);
 
-        // рисуем текущее положение частиц
+        // Г°ГЁГ±ГіГҐГ¬ ГІГҐГЄГіГ№ГҐГҐ ГЇГ®Г«Г®Г¦ГҐГ­ГЁГҐ Г·Г Г±ГІГЁГ¶
         drawBalls(myBox, gc);
         gc.setFill(Color.BLACK);
         gc.strokeLine(0,maxY,maxX,maxY);
