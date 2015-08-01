@@ -46,10 +46,10 @@ public class App extends Application {
         counter.setMinWidth(40);
         counter.setMaxWidth(40);
 
-        // укладываем частицы в коробку
+        // ГіГЄГ«Г Г¤Г»ГўГ ГҐГ¬ Г·Г Г±ГІГЁГ¶Г» Гў ГЄГ®Г°Г®ГЎГЄГі
         myBox.addBalls(Integer.valueOf(counter.getText()));
 
-        // рисуем текущее положение частиц
+        // Г°ГЁГ±ГіГҐГ¬ ГІГҐГЄГіГ№ГҐГҐ ГЇГ®Г«Г®Г¦ГҐГ­ГЁГҐ Г·Г Г±ГІГЁГ¶
 
         drawBalls(myBox, gc);
         gc.setFill(Color.BLACK);
